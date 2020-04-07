@@ -1,3 +1,4 @@
+import cors from 'cors'
 import express from 'express'
 import { ApolloServer, gql } from 'apollo-server-express'
 
@@ -15,13 +16,19 @@ const resolvers = {
   },
 }
 
-const server = new ApolloServer({ typeDefs, resolvers })
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  introspection: true,
+  playground: true,
+})
 
 const app = express()
-server.applyMiddleware({ app })
-
-app.listen({ port: 4000 }, () =>
+app.use(cors())
+server.applyMiddleware({ app, path: '/graphql' })
+const port = process.env.PORT || 4000
+app.listen({ port }, () =>
   console.log(
-    `🚀 Server ready at http://localhost:4000${server.graphqlPath}`
+    `🚀 Server ready at http://localhost:${port}${server.graphqlPath}`
   )
 )
