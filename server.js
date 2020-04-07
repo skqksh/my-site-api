@@ -16,6 +16,7 @@ const typeDefs = gql`
   type Query {
     hotdogs: [Hotdog]
     greeting: String
+    version: String
   }
 `;
 
@@ -29,6 +30,7 @@ const resolvers = {
         .then((snap) => snap.val())
         .then((val) => Object.keys(val).map((key) => val[key])),
     greeting: () => 'Hello GraphQL  From TutorialsPoint !!',
+    version: () => '1',
   },
 };
 
