@@ -1,40 +1,27 @@
-import admin from 'firebase-admin'
-admin.initializeApp()
-import { https } from 'firebase-functions'
 import express from 'express'
 import { ApolloServer, gql } from 'apollo-server-express'
 
+// Construct a schema, using GraphQL schema language
 const typeDefs = gql`
-  type Hotdog {
-    isKosher: Boolean
-    location: String
-    name: String
-    style: String
-    website: String
-  }
-
   type Query {
-    hotdogs: [Hotdog]
-    greeting: String
-    version: String
+    hello: String
   }
 `
 
+// Provide resolver functions for your schema fields
 const resolvers = {
   Query: {
-    hotdogs: (): Promise<any> =>
-      admin
-        .database()
-        .ref('hotdogs')
-        .once('value')
-        .then((snap) => snap.val())
-        .then((val) => Object.keys(val).map((key) => val[key])),
-    greeting: (): string => 'Hello GraphQL  From TutorialsPoint !!',
-    version: (): string => '2',
+    hello: () => 'Hello world!',
   },
 }
 
-const app = express()
 const server = new ApolloServer({ typeDefs, resolvers })
-server.applyMiddleware({ app, path: '/', cors: true })
-exports.graphql = https.onRequest(app)
+
+const app = express()
+server.applyMiddleware({ app })
+
+app.listen({ port: 4000 }, () =>
+  console.log(
+    `🚀 Server ready at http://localhost:4000${server.graphqlPath}`
+  )
+)
